@@ -1,0 +1,1626 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>محلل تكلفة وتسعير البرجر والمشروبات</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #080b10;
+      --panel: #101722;
+      --panel-2: #0c111a;
+      --panel-3: #151e2c;
+      --border: #243044;
+      --muted: #94a3b8;
+      --text: #f8fafc;
+      --accent: #22c55e;
+      --accent-2: #38bdf8;
+      --warn: #f59e0b;
+      --bad: #fb7185;
+      --soft: rgba(255,255,255,.06);
+      --shadow: 0 24px 70px rgba(0,0,0,.35);
+      --radius: 8px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Tahoma, Arial, sans-serif;
+      background:
+        radial-gradient(circle at top right, rgba(34,197,94,.13), transparent 28rem),
+        radial-gradient(circle at bottom left, rgba(56,189,248,.12), transparent 26rem),
+        var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+    }
+
+    button, input, select { font: inherit; }
+
+    .app {
+      width: min(100%, 1320px);
+      margin: 0 auto;
+      padding: 14px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .hero {
+      min-height: 88vh;
+      display: grid;
+      align-content: center;
+      gap: 18px;
+      padding: 28px 0 8px;
+    }
+
+    .hero-grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .eyebrow {
+      color: var(--accent-2);
+      font-weight: 700;
+      font-size: .88rem;
+    }
+
+    h1, h2, h3, p { margin: 0; }
+
+    h1 {
+      font-size: clamp(2rem, 9vw, 5.6rem);
+      line-height: 1.05;
+      letter-spacing: 0;
+      max-width: 900px;
+    }
+
+    .lead {
+      color: #cbd5e1;
+      max-width: 780px;
+      font-size: 1.02rem;
+    }
+
+    .top-actions {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+
+    .status-pill {
+      min-height: 48px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: #dbeafe;
+      background: rgba(15, 23, 42, .72);
+      padding: 10px 14px;
+      font-size: .9rem;
+    }
+
+    .btn {
+      min-height: 48px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--panel-3);
+      color: var(--text);
+      padding: 12px 16px;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+
+    .btn:hover { background: #1d2a3c; }
+    .btn.primary { background: #166534; border-color: #22c55e; }
+    .btn.danger { background: #4c1020; border-color: #9f1239; }
+
+    .section {
+      background: rgba(16,23,34,.88);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 14px;
+    }
+
+    .section-header {
+      display: grid;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .section-header h2 {
+      font-size: 1.24rem;
+    }
+
+    .section-header p {
+      color: var(--muted);
+      font-size: .92rem;
+    }
+
+    .grid { display: grid; gap: 12px; }
+    .two, .three, .four { grid-template-columns: 1fr; }
+
+    .metric-card, .input-card, .product-panel, .chart-card, .break-card {
+      background: rgba(8,12,18,.78);
+      border: 1px solid rgba(148,163,184,.18);
+      border-radius: var(--radius);
+      padding: 14px;
+    }
+
+    .metric-label {
+      color: var(--muted);
+      font-size: .84rem;
+    }
+
+    .metric-value {
+      font-size: 1.55rem;
+      font-weight: 800;
+      margin-top: 4px;
+      overflow-wrap: anywhere;
+    }
+
+    .metric-note {
+      color: var(--muted);
+      font-size: .78rem;
+      margin-top: 4px;
+    }
+
+    label {
+      display: block;
+      color: #cbd5e1;
+      font-size: .86rem;
+      margin-bottom: 7px;
+    }
+
+    input, select {
+      width: 100%;
+      min-height: 48px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: #070b12;
+      color: var(--text);
+      padding: 11px 12px;
+      outline: none;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--accent-2);
+      box-shadow: 0 0 0 3px rgba(56,189,248,.16);
+    }
+
+    .compact-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+
+    .filters {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid rgba(148,163,184,.18);
+      border-radius: var(--radius);
+      background: rgba(8,12,18,.6);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 780px;
+      font-size: .88rem;
+    }
+
+    th, td {
+      text-align: right;
+      padding: 12px 10px;
+      border-bottom: 1px solid rgba(148,163,184,.14);
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+
+    th { color: #cbd5e1; font-weight: 700; background: rgba(15,23,42,.78); }
+    tr:hover td { background: rgba(148,163,184,.06); }
+
+    .mobile-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .mobile-row {
+      display: grid;
+      gap: 10px;
+      background: rgba(8,12,18,.78);
+      border: 1px solid rgba(148,163,184,.18);
+      border-radius: var(--radius);
+      padding: 12px;
+    }
+
+    .row-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: start;
+      font-weight: 800;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 28px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      font-size: .76rem;
+      background: rgba(56,189,248,.14);
+      color: #bae6fd;
+      border: 1px solid rgba(56,189,248,.25);
+      white-space: nowrap;
+    }
+
+    .row-stats {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .mini-stat {
+      background: rgba(255,255,255,.04);
+      border-radius: var(--radius);
+      padding: 9px;
+    }
+
+    .mini-stat span {
+      display: block;
+      color: var(--muted);
+      font-size: .75rem;
+    }
+
+    .mini-stat strong {
+      display: block;
+      margin-top: 2px;
+      font-size: .95rem;
+    }
+
+    .positive { color: #4ade80; }
+    .negative { color: #fb7185; }
+    .warn { color: #fbbf24; }
+
+    .breakdown {
+      display: grid;
+      gap: 8px;
+    }
+
+    .break-line {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+      padding: 9px 0;
+      border-bottom: 1px solid rgba(148,163,184,.12);
+    }
+
+    .break-line:last-child { border-bottom: 0; }
+    .break-line small { display: block; color: var(--muted); }
+
+    .chart-card {
+      min-height: 320px;
+      display: grid;
+      gap: 10px;
+    }
+
+    canvas {
+      width: 100%;
+      height: 260px;
+      display: block;
+      background: rgba(0,0,0,.08);
+      border-radius: var(--radius);
+    }
+
+    .chart-card.tall canvas { height: 340px; }
+
+    .category-strip {
+      display: grid;
+      gap: 8px;
+    }
+
+    .category-item {
+      display: grid;
+      gap: 6px;
+      padding: 11px;
+      border: 1px solid rgba(148,163,184,.16);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.035);
+    }
+
+    .bar-track {
+      height: 8px;
+      background: rgba(148,163,184,.18);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    }
+
+    .desktop-only { display: none; }
+    .mobile-only { display: grid; }
+
+    footer {
+      color: var(--muted);
+      padding: 18px 4px 28px;
+      font-size: .86rem;
+    }
+
+    @media (min-width: 720px) {
+      .app { padding: 22px; gap: 18px; }
+      .hero-grid { grid-template-columns: 1.4fr .8fr; align-items: end; }
+      .top-actions { grid-template-columns: auto auto; justify-content: start; }
+      .two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .four { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .compact-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .filters { grid-template-columns: 1fr 1fr; }
+      .desktop-only { display: block; }
+      .mobile-only { display: none; }
+      .section { padding: 18px; }
+    }
+
+    @media (min-width: 1080px) {
+      .hero { min-height: 78vh; }
+      .layout-main { grid-template-columns: 1.1fr .9fr; }
+      .four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .inputs-layout { grid-template-columns: 1fr 1fr; }
+      .charts-layout { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .wide { grid-column: 1 / -1; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <section class="hero">
+      <div class="hero-grid">
+        <div class="grid">
+          <div class="eyebrow">نظام تكلفة وربحية Product-by-Product</div>
+          <h1>محلل تكلفة وتسعير البرجر والمشروبات</h1>
+          <p class="lead">واجهة موبايل أولًا لحساب تكلفة كل منتج، الربح، الهامش، سعر التعادل، دراسة الجدوى، وتحليل الرسوم البيانية مع حفظ تلقائي لكل تعديل.</p>
+          <div class="top-actions">
+            <button class="btn primary" id="saveBtn" type="button">حفظ الآن</button>
+            <button class="btn danger" id="resetBtn" type="button">Reset القيم الافتراضية</button>
+          </div>
+        </div>
+        <div class="grid">
+          <div class="status-pill" id="saveStatus">Auto-save جاهز</div>
+          <div class="metric-card">
+            <div class="metric-label">الربح الشهري المتوقع</div>
+            <div class="metric-value positive" id="heroMonthlyProfit">0.00 ج</div>
+            <div class="metric-note">محسوب على 30 يومًا من الطلبات اليومية</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="dashboard">
+      <div class="section-header">
+        <h2>Dashboard</h2>
+        <p>ملخص سريع لكل المنتجات حسب الأسعار والكميات الحالية.</p>
+      </div>
+      <div class="grid four" id="dashboardCards"></div>
+      <div class="category-strip" id="categorySummary" style="margin-top:12px"></div>
+    </section>
+
+    <section class="grid layout-main">
+      <div class="section">
+        <div class="section-header">
+          <h2>اختيار المنتج والتحكم في البيع</h2>
+          <p>كل تعديل في سعر البيع أو عدد الطلبات ينعكس فورًا على الحسابات والرسوم.</p>
+        </div>
+        <div class="compact-grid">
+          <div>
+            <label for="productSelect">المنتج</label>
+            <select id="productSelect"></select>
+          </div>
+          <div>
+            <label for="categoryFilter">فلتر النوع</label>
+            <select id="categoryFilter">
+              <option value="all">كل المنتجات</option>
+              <option value="burger">برجر</option>
+              <option value="combo">كومبو</option>
+              <option value="chicken">دجاج</option>
+              <option value="drink">مشروبات</option>
+            </select>
+          </div>
+          <div>
+            <label for="sellingPrice">سعر البيع</label>
+            <input id="sellingPrice" type="number" min="0" step="0.01" inputmode="decimal" />
+          </div>
+          <div>
+            <label for="dailyOrders">عدد الطلبات اليومية</label>
+            <input id="dailyOrders" type="number" min="0" step="1" inputmode="numeric" />
+          </div>
+        </div>
+        <div class="grid four" id="selectedMetrics" style="margin-top:12px"></div>
+      </div>
+
+      <div class="section">
+        <div class="section-header">
+          <h2>Breakdown المنتج</h2>
+          <p>تفصيل الخامات والتغليف والتشغيل والإضافات للمنتج المختار.</p>
+        </div>
+        <div id="selectedBreakdown" class="breakdown"></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-header">
+        <h2>إعدادات الخامات</h2>
+        <p>عدّل سعر أي خامة، وسيتم تحديث كل المنتجات التي تعتمد عليها.</p>
+      </div>
+      <div class="grid inputs-layout" id="ingredientInputs"></div>
+    </section>
+
+    <section class="section">
+      <div class="section-header">
+        <h2>الصوصات والإضافات</h2>
+        <p>نظام منفصل للصوصات المستخدمة في البرجر والدجاج والكومبو.</p>
+      </div>
+      <div class="grid three" id="sauceInputs"></div>
+    </section>
+
+    <section class="section">
+      <div class="section-header">
+        <h2>جدول المنتجات</h2>
+        <p>مقارنة التكلفة، البيع، الربح، الهامش، وسعر التعادل لكل منتج.</p>
+      </div>
+      <div class="filters">
+        <input id="searchInput" type="search" placeholder="ابحث باسم المنتج" />
+        <select id="tableCategory">
+          <option value="all">كل الأنواع</option>
+          <option value="burger">برجر</option>
+          <option value="combo">كومبو</option>
+          <option value="chicken">دجاج</option>
+          <option value="drink">مشروبات</option>
+        </select>
+      </div>
+      <div class="desktop-only table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>المنتج</th>
+              <th>النوع</th>
+              <th>التكلفة</th>
+              <th>سعر البيع</th>
+              <th>الربح</th>
+              <th>الهامش</th>
+              <th>Break-even</th>
+            </tr>
+          </thead>
+          <tbody id="productTable"></tbody>
+        </table>
+      </div>
+      <div class="mobile-only" id="productMobileList"></div>
+    </section>
+
+    <section class="section">
+      <div class="section-header">
+        <h2>دراسة الجدوى وتحليل الربح والخسارة</h2>
+        <p>تقدير يومي وشهري بناءً على عدد الطلبات اليومية لكل منتج.</p>
+      </div>
+      <div class="grid four" id="feasibilityCards"></div>
+      <div class="desktop-only table-wrap" style="margin-top:12px">
+        <table>
+          <thead>
+            <tr>
+              <th>المنتج</th>
+              <th>طلبات/يوم</th>
+              <th>مبيعات يومية</th>
+              <th>تكلفة يومية</th>
+              <th>ربح يومي</th>
+              <th>ربح شهري</th>
+            </tr>
+          </thead>
+          <tbody id="feasibilityTable"></tbody>
+        </table>
+      </div>
+      <div class="mobile-only" id="feasibilityMobileList" style="margin-top:12px"></div>
+    </section>
+
+    <section class="section">
+      <div class="section-header">
+        <h2>Charts وتحليل بصري</h2>
+        <p>رسوم داخلية بدون مكتبات خارجية، متجاوبة مع الموبايل والديسكتوب.</p>
+      </div>
+      <div class="grid charts-layout">
+        <div class="chart-card">
+          <h3>Pie Chart: توزيع تكلفة المنتج المختار</h3>
+          <canvas id="costPie" height="260"></canvas>
+        </div>
+        <div class="chart-card">
+          <h3>Bar Chart: الربح بين المنتجات</h3>
+          <canvas id="profitBar" height="260"></canvas>
+        </div>
+        <div class="chart-card">
+          <h3>الكومبو مقابل المنتجات الفردية</h3>
+          <canvas id="comboBar" height="260"></canvas>
+        </div>
+        <div class="chart-card">
+          <h3>Line Chart: الربح حسب عدد الطلبات</h3>
+          <canvas id="ordersLine" height="260"></canvas>
+        </div>
+        <div class="chart-card">
+          <h3>Chart للمشروبات فقط</h3>
+          <canvas id="drinksChart" height="260"></canvas>
+        </div>
+        <div class="chart-card">
+          <h3>Chart للبرجر فقط</h3>
+          <canvas id="burgerChart" height="260"></canvas>
+        </div>
+        <div class="chart-card">
+          <h3>Chart للدجاج فقط</h3>
+          <canvas id="chickenChart" height="260"></canvas>
+        </div>
+        <div class="chart-card">
+          <h3>أعلى تكلفة وأعلى ربح</h3>
+          <canvas id="topChart" height="260"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      كل القيم قابلة للتعديل ومحفوظة محليًا في المتصفح. الملف مستقل بالكامل ويعمل مباشرة عند فتحه.
+    </footer>
+  </main>
+
+  <script>
+    const storageKey = "burgerDrinksPricingAnalyzerV2";
+    const monthDays = 30;
+
+    const categoryNames = {
+      burger: "برجر",
+      combo: "كومبو",
+      chicken: "دجاج",
+      drink: "مشروبات"
+    };
+
+    const defaultData = {
+      selectedProduct: "classicBurger",
+      tableCategory: "all",
+      categoryFilter: "all",
+      search: "",
+      ingredients: {
+        beefPerKg: 320,
+        chickenPerKg: 170,
+        bun: 6,
+        tortillaBread: 7,
+        cheeseSlice: 4.5,
+        vegPortion: 2,
+        potatoPortion: 8,
+        friesPortion: 7,
+        fryingOilPortion: 2.5,
+        burgerBox: 6,
+        chickenBox: 7,
+        comboBox: 9,
+        burgerWrap: 1.25,
+        innerPaper: 0.8,
+        drinkCup: 2.2,
+        drinkLid: 0.9,
+        straw: 0.45,
+        icePortion: 0.9,
+        coffeeShot: 4,
+        milkPerMl: 0.06,
+        spanishSyrupShot: 4.5,
+        saltedCaramelShot: 5,
+        mochaShot: 5,
+        matchaPowderPortion: 9,
+        zeroSugarSyrupShot: 2.8,
+        mojitoBase: 6,
+        blueberrySyrupShot: 4,
+        mangoPassionSyrupShot: 4,
+        waterSodaPortion: 1.2,
+        chickenCoating: 5,
+        spicesPortion: 2,
+        gasBurger: 3,
+        electricityBurger: 2,
+        laborBurger: 15,
+        wasteBurger: 3,
+        gasChicken: 3.5,
+        electricityChicken: 2.5,
+        laborChicken: 14,
+        wasteChicken: 3,
+        gasDrink: 1,
+        electricityDrink: 1,
+        laborDrink: 8,
+        wasteDrink: 1.5,
+        deliveryCost: 0
+      },
+      sauces: {
+        mayo: 0.10,
+        garlicMayo: 0.13,
+        bbq: 0.14,
+        chipotle: 0.16,
+        spicyMayo: 0.15,
+        cheeseSauce: 0.22,
+        honeyMustard: 0.18,
+        ranch: 0.17,
+        signatureSauce: 0.20
+      },
+      prices: {
+        classicBurger: 160,
+        cheeseBurger: 170,
+        spicyBurger: 170,
+        doubleBurger: 210,
+        smashSingle: 175,
+        smashDouble: 235,
+        comboSingle: 205,
+        comboDouble: 245,
+        chickenStrips: 140,
+        chickenStripsMeal: 170,
+        twister: 130,
+        fajita: 150,
+        icedCoffee: 45,
+        icedCoffeeSpanish: 55,
+        icedCoffeeSaltedCaramel: 58,
+        icedCoffeeMocha: 58,
+        icedCoffeeMatcha: 65,
+        icedCoffeeZero: 48,
+        icedLatte: 55,
+        icedLatteSpanish: 65,
+        icedLatteSaltedCaramel: 68,
+        icedLatteMocha: 68,
+        icedLatteMatcha: 72,
+        mojito: 55,
+        blueberryDrink: 55,
+        mangoPassionDrink: 55
+      },
+      dailyOrders: {
+        classicBurger: 8,
+        cheeseBurger: 6,
+        spicyBurger: 5,
+        doubleBurger: 4,
+        smashSingle: 5,
+        smashDouble: 3,
+        comboSingle: 7,
+        comboDouble: 5,
+        chickenStrips: 4,
+        chickenStripsMeal: 5,
+        twister: 4,
+        fajita: 3,
+        icedCoffee: 10,
+        icedCoffeeSpanish: 7,
+        icedCoffeeSaltedCaramel: 6,
+        icedCoffeeMocha: 6,
+        icedCoffeeMatcha: 4,
+        icedCoffeeZero: 4,
+        icedLatte: 8,
+        icedLatteSpanish: 5,
+        icedLatteSaltedCaramel: 5,
+        icedLatteMocha: 5,
+        icedLatteMatcha: 4,
+        mojito: 7,
+        blueberryDrink: 7,
+        mangoPassionDrink: 7
+      }
+    };
+
+    const ingredientFields = [
+      ["beefPerKg", "سعر كيلو اللحمة", "ج / كجم"],
+      ["chickenPerKg", "سعر كيلو الفراخ", "ج / كجم"],
+      ["bun", "سعر العيش", "ج / قطعة"],
+      ["tortillaBread", "سعر خبز التويستر/الفاهيتا", "ج / قطعة"],
+      ["cheeseSlice", "سعر شريحة الجبنة", "ج / شريحة"],
+      ["vegPortion", "خضار وإضافات", "ج / حصة"],
+      ["potatoPortion", "سعر البطاطس", "ج / حصة"],
+      ["friesPortion", "حصة بطاطس جانبية", "ج / حصة"],
+      ["fryingOilPortion", "سعر الزيت", "ج / حصة"],
+      ["burgerBox", "علبة تغليف البرجر", "ج / قطعة"],
+      ["chickenBox", "علبة تغليف الدجاج", "ج / قطعة"],
+      ["comboBox", "علبة تغليف الكومبو", "ج / قطعة"],
+      ["burgerWrap", "ورق تغليف البرجر", "ج / قطعة"],
+      ["innerPaper", "الورق الداخلي", "ج / قطعة"],
+      ["drinkCup", "الكوب", "ج / قطعة"],
+      ["drinkLid", "الغطاء", "ج / قطعة"],
+      ["straw", "الشفاط", "ج / قطعة"],
+      ["icePortion", "الثلج", "ج / حصة"],
+      ["coffeeShot", "القهوة", "ج / شوت"],
+      ["milkPerMl", "اللبن", "ج / مل"],
+      ["spanishSyrupShot", "سيرب Spanish", "ج / شوت"],
+      ["saltedCaramelShot", "سيرب Salted Caramel", "ج / شوت"],
+      ["mochaShot", "نكهة Mocha", "ج / شوت"],
+      ["matchaPowderPortion", "بودرة Matcha", "ج / حصة"],
+      ["zeroSugarSyrupShot", "Zero Sugar / Diet / Light", "ج / شوت"],
+      ["mojitoBase", "خامات Mojito", "ج / حصة"],
+      ["blueberrySyrupShot", "سيرب Blueberry", "ج / شوت"],
+      ["mangoPassionSyrupShot", "سيرب Mango Passion Fruit", "ج / شوت"],
+      ["waterSodaPortion", "مياه / صودا", "ج / حصة"],
+      ["chickenCoating", "تتبيلة/تغطية الدجاج", "ج / حصة"],
+      ["spicesPortion", "بهارات", "ج / حصة"],
+      ["gasBurger", "غاز البرجر", "ج / منتج"],
+      ["electricityBurger", "كهرباء البرجر", "ج / منتج"],
+      ["laborBurger", "عمالة أو وقت البرجر", "ج / منتج"],
+      ["wasteBurger", "هالك البرجر", "ج / منتج"],
+      ["gasChicken", "غاز الدجاج", "ج / منتج"],
+      ["electricityChicken", "كهرباء الدجاج", "ج / منتج"],
+      ["laborChicken", "عمالة أو وقت الدجاج", "ج / منتج"],
+      ["wasteChicken", "هالك الدجاج", "ج / منتج"],
+      ["gasDrink", "غاز المشروبات", "ج / منتج"],
+      ["electricityDrink", "كهرباء المشروبات", "ج / منتج"],
+      ["laborDrink", "عمالة أو وقت المشروبات", "ج / منتج"],
+      ["wasteDrink", "هالك المشروبات", "ج / منتج"],
+      ["deliveryCost", "تكلفة التوصيل", "ج / طلب"]
+    ];
+
+    const sauceFields = [
+      ["mayo", "Mayo"],
+      ["garlicMayo", "Garlic Mayo"],
+      ["bbq", "BBQ"],
+      ["chipotle", "Chipotle"],
+      ["spicyMayo", "Spicy Mayo"],
+      ["cheeseSauce", "Cheese Sauce"],
+      ["honeyMustard", "Honey Mustard"],
+      ["ranch", "Ranch"],
+      ["signatureSauce", "Signature Sauce"]
+    ];
+
+    const products = [
+      {
+        id: "classicBurger",
+        name: "Classic Burger",
+        category: "burger",
+        recipe: {
+          ingredients: [
+            ["beefPerKg", "لحمة", 100, "gram", "raw"],
+            ["bun", "عيش", 1, "unit", "raw"],
+            ["cheeseSlice", "جبنة", 1, "unit", "raw"],
+            ["vegPortion", "خضار", 1, "unit", "raw"],
+            ["fryingOilPortion", "زيت", 1, "unit", "operating"],
+            ["burgerBox", "علبة تغليف", 1, "unit", "packaging"],
+            ["burgerWrap", "ورق تغليف", 1, "unit", "packaging"],
+            ["innerPaper", "ورق داخلي", 1, "unit", "packaging"],
+            ["gasBurger", "غاز", 1, "unit", "operating"],
+            ["electricityBurger", "كهرباء", 1, "unit", "operating"],
+            ["laborBurger", "عمالة/وقت", 1, "unit", "labor"],
+            ["wasteBurger", "هالك", 1, "unit", "waste"],
+            ["deliveryCost", "توصيل", 1, "unit", "delivery"]
+          ],
+          sauces: [["mayo", "Mayo", 12], ["signatureSauce", "Signature Sauce", 8]]
+        }
+      },
+      {
+        id: "cheeseBurger",
+        name: "Cheese Burger",
+        category: "burger",
+        recipe: {
+          ingredients: [
+            ["beefPerKg", "لحمة", 110, "gram", "raw"],
+            ["bun", "عيش", 1, "unit", "raw"],
+            ["cheeseSlice", "جبنة", 2, "unit", "raw"],
+            ["vegPortion", "خضار", 1, "unit", "raw"],
+            ["fryingOilPortion", "زيت", 1, "unit", "operating"],
+            ["burgerBox", "علبة تغليف", 1, "unit", "packaging"],
+            ["burgerWrap", "ورق تغليف", 1, "unit", "packaging"],
+            ["innerPaper", "ورق داخلي", 1, "unit", "packaging"],
+            ["gasBurger", "غاز", 1, "unit", "operating"],
+            ["electricityBurger", "كهرباء", 1, "unit", "operating"],
+            ["laborBurger", "عمالة/وقت", 1, "unit", "labor"],
+            ["wasteBurger", "هالك", 1, "unit", "waste"],
+            ["deliveryCost", "توصيل", 1, "unit", "delivery"]
+          ],
+          sauces: [["cheeseSauce", "Cheese Sauce", 15], ["mayo", "Mayo", 8]]
+        }
+      },
+      {
+        id: "spicyBurger",
+        name: "Spicy Burger",
+        category: "burger",
+        recipe: {
+          ingredients: [
+            ["beefPerKg", "لحمة", 110, "gram", "raw"],
+            ["bun", "عيش", 1, "unit", "raw"],
+            ["cheeseSlice", "جبنة", 1, "unit", "raw"],
+            ["vegPortion", "خضار", 1, "unit", "raw"],
+            ["spicesPortion", "بهارات", 1, "unit", "raw"],
+            ["fryingOilPortion", "زيت", 1, "unit", "operating"],
+            ["burgerBox", "علبة تغليف", 1, "unit", "packaging"],
+            ["burgerWrap", "ورق تغليف", 1, "unit", "packaging"],
+            ["innerPaper", "ورق داخلي", 1, "unit", "packaging"],
+            ["gasBurger", "غاز", 1, "unit", "operating"],
+            ["electricityBurger", "كهرباء", 1, "unit", "operating"],
+            ["laborBurger", "عمالة/وقت", 1, "unit", "labor"],
+            ["wasteBurger", "هالك", 1, "unit", "waste"],
+            ["deliveryCost", "توصيل", 1, "unit", "delivery"]
+          ],
+          sauces: [["spicyMayo", "Spicy Mayo", 18], ["chipotle", "Chipotle", 7]]
+        }
+      },
+      {
+        id: "doubleBurger",
+        name: "Double Burger",
+        category: "burger",
+        recipe: {
+          ingredients: [
+            ["beefPerKg", "لحمة", 200, "gram", "raw"],
+            ["bun", "عيش", 1, "unit", "raw"],
+            ["cheeseSlice", "جبنة", 2, "unit", "raw"],
+            ["vegPortion", "خضار", 1, "unit", "raw"],
+            ["fryingOilPortion", "زيت", 1.4, "unit", "operating"],
+            ["burgerBox", "علبة تغليف", 1, "unit", "packaging"],
+            ["burgerWrap", "ورق تغليف", 1, "unit", "packaging"],
+            ["innerPaper", "ورق داخلي", 1, "unit", "packaging"],
+            ["gasBurger", "غاز", 1.2, "unit", "operating"],
+            ["electricityBurger", "كهرباء", 1.2, "unit", "operating"],
+            ["laborBurger", "عمالة/وقت", 1.15, "unit", "labor"],
+            ["wasteBurger", "هالك", 1.2, "unit", "waste"],
+            ["deliveryCost", "توصيل", 1, "unit", "delivery"]
+          ],
+          sauces: [["mayo", "Mayo", 14], ["bbq", "BBQ", 12]]
+        }
+      },
+      {
+        id: "smashSingle",
+        name: "Smash Burger Single",
+        category: "burger",
+        recipe: {
+          ingredients: [
+            ["beefPerKg", "لحمة", 120, "gram", "raw"],
+            ["bun", "عيش", 1, "unit", "raw"],
+            ["cheeseSlice", "جبنة", 2, "unit", "raw"],
+            ["vegPortion", "خضار", 1, "unit", "raw"],
+            ["fryingOilPortion", "زيت", 1.1, "unit", "operating"],
+            ["burgerBox", "علبة تغليف", 1, "unit", "packaging"],
+            ["burgerWrap", "ورق تغليف", 1, "unit", "packaging"],
+            ["innerPaper", "ورق داخلي", 1, "unit", "packaging"],
+            ["gasBurger", "غاز", 1.1, "unit", "operating"],
+            ["electricityBurger", "كهرباء", 1.1, "unit", "operating"],
+            ["laborBurger", "عمالة/وقت", 1.1, "unit", "labor"],
+            ["wasteBurger", "هالك", 1.1, "unit", "waste"],
+            ["deliveryCost", "توصيل", 1, "unit", "delivery"]
+          ],
+          sauces: [["signatureSauce", "Signature Sauce", 18], ["cheeseSauce", "Cheese Sauce", 10]]
+        }
+      },
+      {
+        id: "smashDouble",
+        name: "Smash Burger Double",
+        category: "burger",
+        recipe: {
+          ingredients: [
+            ["beefPerKg", "لحمة", 240, "gram", "raw"],
+            ["bun", "عيش", 1, "unit", "raw"],
+            ["cheeseSlice", "جبنة", 3, "unit", "raw"],
+            ["vegPortion", "خضار", 1, "unit", "raw"],
+            ["fryingOilPortion", "زيت", 1.5, "unit", "operating"],
+            ["burgerBox", "علبة تغليف", 1, "unit", "packaging"],
+            ["burgerWrap", "ورق تغليف", 1, "unit", "packaging"],
+            ["innerPaper", "ورق داخلي", 1, "unit", "packaging"],
+            ["gasBurger", "غاز", 1.3, "unit", "operating"],
+            ["electricityBurger", "كهرباء", 1.3, "unit", "operating"],
+            ["laborBurger", "عمالة/وقت", 1.2, "unit", "labor"],
+            ["wasteBurger", "هالك", 1.3, "unit", "waste"],
+            ["deliveryCost", "توصيل", 1, "unit", "delivery"]
+          ],
+          sauces: [["signatureSauce", "Signature Sauce", 22], ["cheeseSauce", "Cheese Sauce", 15]]
+        }
+      },
+      {
+        id: "comboSingle",
+        name: "Combo Single",
+        category: "combo",
+        recipe: {
+          components: [["smashSingle", "Smash Burger Single", 1], ["icedCoffee", "Iced Coffee", 1]],
+          ingredients: [
+            ["friesPortion", "بطاطس", 1, "unit", "raw"],
+            ["fryingOilPortion", "زيت البطاطس", 1, "unit", "operating"],
+            ["comboBox", "تغليف كومبو", 1, "unit", "packaging"],
+            ["innerPaper", "ورق داخلي", 1, "unit", "packaging"]
+          ]
+        }
+      },
+      {
+        id: "comboDouble",
+        name: "Combo Double",
+        category: "combo",
+        recipe: {
+          components: [["smashDouble", "Smash Burger Double", 1], ["icedCoffee", "Iced Coffee", 1]],
+          ingredients: [
+            ["friesPortion", "بطاطس", 1, "unit", "raw"],
+            ["fryingOilPortion", "زيت البطاطس", 1, "unit", "operating"],
+            ["comboBox", "تغليف كومبو", 1, "unit", "packaging"],
+            ["innerPaper", "ورق داخلي", 1, "unit", "packaging"]
+          ]
+        }
+      },
+      {
+        id: "chickenStrips",
+        name: "Chicken Strips",
+        category: "chicken",
+        recipe: {
+          ingredients: [
+            ["chickenPerKg", "فراخ", 160, "gram", "raw"],
+            ["chickenCoating", "تغطية/تتبيلة", 1, "unit", "raw"],
+            ["spicesPortion", "بهارات", 1, "unit", "raw"],
+            ["fryingOilPortion", "زيت", 1.2, "unit", "operating"],
+            ["chickenBox", "علبة تغليف", 1, "unit", "packaging"],
+            ["innerPaper", "ورق داخلي", 1, "unit", "packaging"],
+            ["gasChicken", "غاز", 1, "unit", "operating"],
+            ["electricityChicken", "كهرباء", 1, "unit", "operating"],
+            ["laborChicken", "عمالة/وقت", 1, "unit", "labor"],
+            ["wasteChicken", "هالك", 1, "unit", "waste"],
+            ["deliveryCost", "توصيل", 1, "unit", "delivery"]
+          ],
+          sauces: [["garlicMayo", "Garlic Mayo", 18], ["honeyMustard", "Honey Mustard", 8]]
+        }
+      },
+      {
+        id: "chickenStripsMeal",
+        name: "Chicken Strips Meal",
+        category: "chicken",
+        recipe: {
+          components: [["chickenStrips", "Chicken Strips", 1]],
+          ingredients: [
+            ["friesPortion", "بطاطس", 1, "unit", "raw"],
+            ["fryingOilPortion", "زيت البطاطس", 1, "unit", "operating"],
+            ["drinkCup", "مشروب/كوب", 1, "unit", "packaging"],
+            ["drinkLid", "غطاء", 1, "unit", "packaging"],
+            ["straw", "شفاط", 1, "unit", "packaging"],
+            ["waterSodaPortion", "مشروب صودا", 1, "unit", "raw"]
+          ]
+        }
+      },
+      {
+        id: "twister",
+        name: "Twister",
+        category: "chicken",
+        recipe: {
+          ingredients: [
+            ["chickenPerKg", "فراخ", 120, "gram", "raw"],
+            ["tortillaBread", "عيش تورتيلا", 1, "unit", "raw"],
+            ["vegPortion", "خضار", 1, "unit", "raw"],
+            ["chickenCoating", "تتبيلة", .7, "unit", "raw"],
+            ["fryingOilPortion", "زيت", .9, "unit", "operating"],
+            ["burgerWrap", "ورق تغليف", 1, "unit", "packaging"],
+            ["innerPaper", "ورق داخلي", 1, "unit", "packaging"],
+            ["gasChicken", "غاز", .8, "unit", "operating"],
+            ["electricityChicken", "كهرباء", .8, "unit", "operating"],
+            ["laborChicken", "عمالة/وقت", .9, "unit", "labor"],
+            ["wasteChicken", "هالك", .8, "unit", "waste"],
+            ["deliveryCost", "توصيل", 1, "unit", "delivery"]
+          ],
+          sauces: [["ranch", "Ranch", 12], ["garlicMayo", "Garlic Mayo", 10]]
+        }
+      },
+      {
+        id: "fajita",
+        name: "Fajita",
+        category: "chicken",
+        recipe: {
+          ingredients: [
+            ["chickenPerKg", "فراخ", 140, "gram", "raw"],
+            ["tortillaBread", "عيش تورتيلا", 1, "unit", "raw"],
+            ["cheeseSlice", "جبنة", 1, "unit", "raw"],
+            ["vegPortion", "خضار", 1.3, "unit", "raw"],
+            ["spicesPortion", "بهارات فاهيتا", 1.2, "unit", "raw"],
+            ["fryingOilPortion", "زيت", .8, "unit", "operating"],
+            ["burgerWrap", "ورق تغليف", 1, "unit", "packaging"],
+            ["innerPaper", "ورق داخلي", 1, "unit", "packaging"],
+            ["gasChicken", "غاز", .9, "unit", "operating"],
+            ["electricityChicken", "كهرباء", .9, "unit", "operating"],
+            ["laborChicken", "عمالة/وقت", 1, "unit", "labor"],
+            ["wasteChicken", "هالك", .9, "unit", "waste"],
+            ["deliveryCost", "توصيل", 1, "unit", "delivery"]
+          ],
+          sauces: [["chipotle", "Chipotle", 12], ["cheeseSauce", "Cheese Sauce", 8]]
+        }
+      },
+      drink("icedCoffee", "Iced Coffee", [["coffeeShot", "القهوة", 1], ["milkPerMl", "اللبن", 80, "ml"]]),
+      drink("icedCoffeeSpanish", "Iced Coffee Spanish", [["coffeeShot", "القهوة", 1], ["milkPerMl", "اللبن", 90, "ml"], ["spanishSyrupShot", "سيرب Spanish", 1]]),
+      drink("icedCoffeeSaltedCaramel", "Iced Coffee Salted Caramel", [["coffeeShot", "القهوة", 1], ["milkPerMl", "اللبن", 90, "ml"], ["saltedCaramelShot", "سيرب Salted Caramel", 1]]),
+      drink("icedCoffeeMocha", "Iced Coffee Mocha", [["coffeeShot", "القهوة", 1], ["milkPerMl", "اللبن", 90, "ml"], ["mochaShot", "نكهة Mocha", 1]]),
+      drink("icedCoffeeMatcha", "Iced Coffee Matcha", [["coffeeShot", "القهوة", 1], ["milkPerMl", "اللبن", 100, "ml"], ["matchaPowderPortion", "بودرة Matcha", 1]]),
+      drink("icedCoffeeZero", "Iced Coffee Zero Sugar / Diet / Light", [["coffeeShot", "القهوة", 1], ["milkPerMl", "اللبن", 60, "ml"], ["zeroSugarSyrupShot", "Zero Sugar / Diet / Light", 1]]),
+      drink("icedLatte", "Iced Latte", [["coffeeShot", "القهوة", 1], ["milkPerMl", "اللبن", 220, "ml"]]),
+      drink("icedLatteSpanish", "Iced Latte Spanish", [["coffeeShot", "القهوة", 1], ["milkPerMl", "اللبن", 220, "ml"], ["spanishSyrupShot", "سيرب Spanish", 1]]),
+      drink("icedLatteSaltedCaramel", "Iced Latte Salted Caramel", [["coffeeShot", "القهوة", 1], ["milkPerMl", "اللبن", 220, "ml"], ["saltedCaramelShot", "سيرب Salted Caramel", 1]]),
+      drink("icedLatteMocha", "Iced Latte Mocha", [["coffeeShot", "القهوة", 1], ["milkPerMl", "اللبن", 220, "ml"], ["mochaShot", "نكهة Mocha", 1]]),
+      drink("icedLatteMatcha", "Iced Latte Matcha", [["coffeeShot", "القهوة", 1], ["milkPerMl", "اللبن", 210, "ml"], ["matchaPowderPortion", "بودرة Matcha", 1.2]]),
+      drink("mojito", "Mojito", [["mojitoBase", "خامات Mojito", 1], ["waterSodaPortion", "مياه / صودا", 1]]),
+      drink("blueberryDrink", "Blueberry Drink", [["blueberrySyrupShot", "سيرب Blueberry", 2], ["waterSodaPortion", "مياه / صودا", 1]]),
+      drink("mangoPassionDrink", "Mango Passion Fruit Drink", [["mangoPassionSyrupShot", "سيرب Mango Passion Fruit", 2], ["waterSodaPortion", "مياه / صودا", 1]])
+    ];
+
+    function drink(id, name, extras) {
+      return {
+        id,
+        name,
+        category: "drink",
+        recipe: {
+          ingredients: [
+            ...extras.map(([key, label, qty, unit]) => [key, label, qty, unit || "unit", "raw"]),
+            ["icePortion", "ثلج", 1, "unit", "raw"],
+            ["drinkCup", "كوب", 1, "unit", "packaging"],
+            ["drinkLid", "غطاء", 1, "unit", "packaging"],
+            ["straw", "شفاط", 1, "unit", "packaging"],
+            ["gasDrink", "غاز", 1, "unit", "operating"],
+            ["electricityDrink", "كهرباء", 1, "unit", "operating"],
+            ["laborDrink", "عمالة/وقت", 1, "unit", "labor"],
+            ["wasteDrink", "هالك", 1, "unit", "waste"],
+            ["deliveryCost", "توصيل", 1, "unit", "delivery"]
+          ]
+        }
+      };
+    }
+
+    let state = loadState();
+    let saveTimer = null;
+
+    const els = {
+      saveStatus: document.getElementById("saveStatus"),
+      heroMonthlyProfit: document.getElementById("heroMonthlyProfit"),
+      dashboardCards: document.getElementById("dashboardCards"),
+      categorySummary: document.getElementById("categorySummary"),
+      productSelect: document.getElementById("productSelect"),
+      categoryFilter: document.getElementById("categoryFilter"),
+      sellingPrice: document.getElementById("sellingPrice"),
+      dailyOrders: document.getElementById("dailyOrders"),
+      selectedMetrics: document.getElementById("selectedMetrics"),
+      selectedBreakdown: document.getElementById("selectedBreakdown"),
+      ingredientInputs: document.getElementById("ingredientInputs"),
+      sauceInputs: document.getElementById("sauceInputs"),
+      searchInput: document.getElementById("searchInput"),
+      tableCategory: document.getElementById("tableCategory"),
+      productTable: document.getElementById("productTable"),
+      productMobileList: document.getElementById("productMobileList"),
+      feasibilityCards: document.getElementById("feasibilityCards"),
+      feasibilityTable: document.getElementById("feasibilityTable"),
+      feasibilityMobileList: document.getElementById("feasibilityMobileList")
+    };
+
+    function loadState() {
+      let saved = {};
+      try { saved = JSON.parse(localStorage.getItem(storageKey) || "{}") || {}; } catch (e) { saved = {}; }
+      try {
+        const old = JSON.parse(localStorage.getItem("burgerAnalyzerState") || "{}") || {};
+        if (!saved.ingredients && old.ingredients) saved.ingredients = old.ingredients;
+        if (!saved.prices && old.prices) saved.prices = old.prices;
+      } catch (e) {}
+      return mergeData(defaultData, saved);
+    }
+
+    function mergeData(base, extra) {
+      const merged = structuredClone(base);
+      for (const key of ["ingredients", "sauces", "prices", "dailyOrders"]) {
+        merged[key] = { ...base[key], ...(extra[key] || {}) };
+      }
+      merged.selectedProduct = extra.selectedProduct || base.selectedProduct;
+      merged.tableCategory = extra.tableCategory || base.tableCategory;
+      merged.categoryFilter = extra.categoryFilter || base.categoryFilter;
+      merged.search = extra.search || base.search;
+      return merged;
+    }
+
+    function money(n) {
+      const value = Number.isFinite(n) ? n : 0;
+      return `${value.toFixed(2)} ج`;
+    }
+
+    function round(n) { return Math.round((n + Number.EPSILON) * 100) / 100; }
+
+    function productById(id) { return products.find(p => p.id === id); }
+
+    function unitCost(key, qty, unit) {
+      const price = Number(state.ingredients[key] || 0);
+      if (unit === "gram") return (price / 1000) * qty;
+      if (unit === "ml") return price * qty;
+      return price * qty;
+    }
+
+    function addBreakdown(groups, category, label, cost, meta) {
+      const value = round(cost);
+      groups.push({ category, label, cost: value, meta: meta || "" });
+    }
+
+    function calcProduct(product, stack = new Set()) {
+      if (!product || stack.has(product.id)) return { cost: 0, breakdown: [], totals: blankTotals() };
+      stack.add(product.id);
+      const breakdown = [];
+      const totals = blankTotals();
+      const recipe = product.recipe || {};
+
+      (recipe.components || []).forEach(([id, label, qty]) => {
+        const child = calcProduct(productById(id), new Set(stack));
+        const cost = child.cost * qty;
+        addBreakdown(breakdown, "raw", label, cost, `${qty} × منتج`);
+        for (const key of Object.keys(totals)) {
+          totals[key] += child.totals[key] * qty;
+        }
+      });
+
+      (recipe.ingredients || []).forEach(([key, label, qty, unit, category]) => {
+        const cost = unitCost(key, qty, unit);
+        addBreakdown(breakdown, category, label, cost, qtyLabel(qty, unit));
+        totals[category] += cost;
+      });
+
+      (recipe.sauces || []).forEach(([key, label, grams]) => {
+        const cost = Number(state.sauces[key] || 0) * grams;
+        addBreakdown(breakdown, "addons", label, cost, `${grams} جم`);
+        totals.addons += cost;
+      });
+
+      stack.delete(product.id);
+      const cost = Object.values(totals).reduce((sum, val) => sum + val, 0);
+      return {
+        cost: round(cost),
+        breakdown,
+        totals: Object.fromEntries(Object.entries(totals).map(([k, v]) => [k, round(v)]))
+      };
+    }
+
+    function blankTotals() {
+      return { raw: 0, packaging: 0, operating: 0, delivery: 0, waste: 0, labor: 0, addons: 0 };
+    }
+
+    function qtyLabel(qty, unit) {
+      if (unit === "gram") return `${qty} جم`;
+      if (unit === "ml") return `${qty} مل`;
+      return `${qty} ×`;
+    }
+
+    function productStats(product) {
+      const calc = calcProduct(product);
+      const price = Number(state.prices[product.id] || 0);
+      const orders = Number(state.dailyOrders[product.id] || 0);
+      const profit = round(price - calc.cost);
+      const margin = price ? round((profit / price) * 100) : 0;
+      const dailySales = round(price * orders);
+      const dailyCost = round(calc.cost * orders);
+      const dailyProfit = round(profit * orders);
+      return {
+        product, calc, price, orders, profit, margin,
+        breakEven: calc.cost,
+        dailySales, dailyCost, dailyProfit,
+        monthlyProfit: round(dailyProfit * monthDays)
+      };
+    }
+
+    function allStats() {
+      return products.map(productStats);
+    }
+
+    function byCurrentFilters() {
+      const search = (state.search || "").trim().toLowerCase();
+      return allStats().filter(s => {
+        const catOk = state.tableCategory === "all" || s.product.category === state.tableCategory;
+        const searchOk = !search || s.product.name.toLowerCase().includes(search);
+        return catOk && searchOk;
+      });
+    }
+
+    function save(immediate = false) {
+      clearTimeout(saveTimer);
+      const doSave = () => {
+        localStorage.setItem(storageKey, JSON.stringify(state));
+        els.saveStatus.textContent = "تم الحفظ تلقائيًا";
+      };
+      els.saveStatus.textContent = "جاري الحفظ...";
+      if (immediate) doSave();
+      else saveTimer = setTimeout(doSave, 180);
+    }
+
+    function renderInputs() {
+      els.ingredientInputs.innerHTML = ingredientFields.map(([key, label, unit]) => `
+        <div class="input-card">
+          <label for="ing-${key}">${label}</label>
+          <input id="ing-${key}" data-kind="ingredient" data-key="${key}" type="number" min="0" step="0.01" inputmode="decimal" value="${state.ingredients[key]}">
+          <div class="metric-note">${unit}</div>
+        </div>
+      `).join("");
+
+      els.sauceInputs.innerHTML = sauceFields.map(([key, label]) => `
+        <div class="input-card">
+          <label for="sauce-${key}">${label}</label>
+          <input id="sauce-${key}" data-kind="sauce" data-key="${key}" type="number" min="0" step="0.01" inputmode="decimal" value="${state.sauces[key]}">
+          <div class="metric-note">ج / جرام</div>
+        </div>
+      `).join("");
+    }
+
+    function renderSelects() {
+      const category = state.categoryFilter || "all";
+      const list = products.filter(p => category === "all" || p.category === category);
+      if (!list.some(p => p.id === state.selectedProduct)) state.selectedProduct = list[0]?.id || products[0].id;
+      els.productSelect.innerHTML = list.map(p => `<option value="${p.id}">${p.name}</option>`).join("");
+      els.productSelect.value = state.selectedProduct;
+      els.categoryFilter.value = state.categoryFilter;
+      els.tableCategory.value = state.tableCategory;
+      els.searchInput.value = state.search || "";
+      updateSelectedControls();
+    }
+
+    function updateSelectedControls() {
+      const id = state.selectedProduct;
+      els.sellingPrice.value = state.prices[id] ?? 0;
+      els.dailyOrders.value = state.dailyOrders[id] ?? 0;
+    }
+
+    function metric(label, value, note, cls = "") {
+      return `
+        <div class="metric-card">
+          <div class="metric-label">${label}</div>
+          <div class="metric-value ${cls}">${value}</div>
+          ${note ? `<div class="metric-note">${note}</div>` : ""}
+        </div>
+      `;
+    }
+
+    function renderDashboard() {
+      const stats = allStats();
+      const topProfit = stats.reduce((a, b) => b.profit > a.profit ? b : a, stats[0]);
+      const lowProfit = stats.reduce((a, b) => b.profit < a.profit ? b : a, stats[0]);
+      const avgMargin = stats.length ? stats.reduce((s, x) => s + x.margin, 0) / stats.length : 0;
+      const dailyProfit = stats.reduce((s, x) => s + x.dailyProfit, 0);
+      const monthlyProfit = dailyProfit * monthDays;
+      const selected = productStats(productById(state.selectedProduct));
+
+      els.heroMonthlyProfit.textContent = money(monthlyProfit);
+      els.dashboardCards.innerHTML = [
+        metric("إجمالي عدد المنتجات", stats.length, "كل المنيو المطلوب"),
+        metric("أعلى منتج ربحًا", money(topProfit.profit), topProfit.product.name, "positive"),
+        metric("أقل منتج ربحًا", money(lowProfit.profit), lowProfit.product.name, lowProfit.profit >= 0 ? "warn" : "negative"),
+        metric("متوسط هامش الربح", `${avgMargin.toFixed(1)}%`, "متوسط كل المنتجات"),
+        metric("إجمالي الربح المتوقع يوميًا", money(dailyProfit), "حسب الطلبات اليومية", dailyProfit >= 0 ? "positive" : "negative"),
+        metric("إجمالي الربح المتوقع شهريًا", money(monthlyProfit), "30 يومًا", monthlyProfit >= 0 ? "positive" : "negative"),
+        metric("سعر تعادل المنتج المختار", money(selected.breakEven), selected.product.name),
+        metric("ربح المنتج المختار يوميًا", money(selected.dailyProfit), `${selected.orders} طلب / يوم`, selected.dailyProfit >= 0 ? "positive" : "negative")
+      ].join("");
+
+      const categoryData = Object.keys(categoryNames).map(cat => {
+        const items = stats.filter(s => s.product.category === cat);
+        const profit = items.reduce((sum, x) => sum + x.dailyProfit, 0);
+        return { cat, label: categoryNames[cat], count: items.length, profit };
+      });
+      const maxProfit = Math.max(...categoryData.map(x => Math.abs(x.profit)), 1);
+      els.categorySummary.innerHTML = categoryData.map(x => `
+        <div class="category-item">
+          <div class="row-title"><span>${x.label}</span><span class="badge">${x.count} منتجات</span></div>
+          <div class="${x.profit >= 0 ? "positive" : "negative"}">${money(x.profit)} ربح يومي</div>
+          <div class="bar-track"><div class="bar-fill" style="width:${Math.min(100, Math.abs(x.profit) / maxProfit * 100)}%"></div></div>
+        </div>
+      `).join("");
+    }
+
+    function renderSelected() {
+      const stats = productStats(productById(state.selectedProduct));
+      els.selectedMetrics.innerHTML = [
+        metric("تكلفة المنتج", money(stats.calc.cost), "خامات + تغليف + تشغيل"),
+        metric("الربح الصافي", money(stats.profit), "لكل قطعة", stats.profit >= 0 ? "positive" : "negative"),
+        metric("هامش الربح", `${stats.margin.toFixed(1)}%`, "من سعر البيع"),
+        metric("Break-even", money(stats.breakEven), "أقل سعر بدون ربح")
+      ].join("");
+
+      const total = Math.max(stats.calc.cost, 1);
+      els.selectedBreakdown.innerHTML = stats.calc.breakdown.map(item => `
+        <div class="break-line">
+          <div>
+            <strong>${item.label}</strong>
+            <small>${categoryLabel(item.category)} - ${item.meta} - ${((item.cost / total) * 100).toFixed(1)}%</small>
+          </div>
+          <strong>${money(item.cost)}</strong>
+        </div>
+      `).join("");
+    }
+
+    function categoryLabel(category) {
+      return {
+        raw: "خامات",
+        packaging: "تغليف",
+        operating: "تشغيل",
+        delivery: "توصيل",
+        waste: "هالك",
+        labor: "عمالة/وقت",
+        addons: "صوصات وإضافات"
+      }[category] || category;
+    }
+
+    function renderTable() {
+      const stats = byCurrentFilters();
+      els.productTable.innerHTML = stats.map(s => `
+        <tr data-product-row="${s.product.id}">
+          <td><button class="btn" type="button" data-select="${s.product.id}">${s.product.name}</button></td>
+          <td>${categoryNames[s.product.category]}</td>
+          <td>${money(s.calc.cost)}</td>
+          <td>${money(s.price)}</td>
+          <td class="${s.profit >= 0 ? "positive" : "negative"}">${money(s.profit)}</td>
+          <td>${s.margin.toFixed(1)}%</td>
+          <td>${money(s.breakEven)}</td>
+        </tr>
+      `).join("");
+
+      els.productMobileList.innerHTML = stats.map(s => `
+        <div class="mobile-row">
+          <div class="row-title">
+            <span>${s.product.name}</span>
+            <span class="badge">${categoryNames[s.product.category]}</span>
+          </div>
+          <div class="row-stats">
+            <div class="mini-stat"><span>التكلفة</span><strong>${money(s.calc.cost)}</strong></div>
+            <div class="mini-stat"><span>سعر البيع</span><strong>${money(s.price)}</strong></div>
+            <div class="mini-stat"><span>الربح</span><strong class="${s.profit >= 0 ? "positive" : "negative"}">${money(s.profit)}</strong></div>
+            <div class="mini-stat"><span>الهامش</span><strong>${s.margin.toFixed(1)}%</strong></div>
+          </div>
+          <button class="btn" type="button" data-select="${s.product.id}">عرض المنتج</button>
+        </div>
+      `).join("");
+    }
+
+    function renderFeasibility() {
+      const stats = allStats();
+      const dailySales = stats.reduce((s, x) => s + x.dailySales, 0);
+      const dailyCost = stats.reduce((s, x) => s + x.dailyCost, 0);
+      const dailyProfit = stats.reduce((s, x) => s + x.dailyProfit, 0);
+      const monthlyProfit = dailyProfit * monthDays;
+      els.feasibilityCards.innerHTML = [
+        metric("مبيعات يومية", money(dailySales), "كل المنتجات"),
+        metric("تكلفة يومية", money(dailyCost), "خامات وتشغيل"),
+        metric("ربح/خسارة يومية", money(dailyProfit), "بعد التكلفة", dailyProfit >= 0 ? "positive" : "negative"),
+        metric("ربح/خسارة شهرية", money(monthlyProfit), "30 يومًا", monthlyProfit >= 0 ? "positive" : "negative")
+      ].join("");
+
+      const rows = stats.filter(s => s.orders > 0).sort((a, b) => b.dailyProfit - a.dailyProfit);
+      els.feasibilityTable.innerHTML = rows.map(s => `
+        <tr>
+          <td>${s.product.name}</td>
+          <td>${s.orders}</td>
+          <td>${money(s.dailySales)}</td>
+          <td>${money(s.dailyCost)}</td>
+          <td class="${s.dailyProfit >= 0 ? "positive" : "negative"}">${money(s.dailyProfit)}</td>
+          <td class="${s.monthlyProfit >= 0 ? "positive" : "negative"}">${money(s.monthlyProfit)}</td>
+        </tr>
+      `).join("");
+
+      els.feasibilityMobileList.innerHTML = rows.map(s => `
+        <div class="mobile-row">
+          <div class="row-title"><span>${s.product.name}</span><span class="badge">${s.orders} طلب/يوم</span></div>
+          <div class="row-stats">
+            <div class="mini-stat"><span>مبيعات يومية</span><strong>${money(s.dailySales)}</strong></div>
+            <div class="mini-stat"><span>تكلفة يومية</span><strong>${money(s.dailyCost)}</strong></div>
+            <div class="mini-stat"><span>ربح يومي</span><strong class="${s.dailyProfit >= 0 ? "positive" : "negative"}">${money(s.dailyProfit)}</strong></div>
+            <div class="mini-stat"><span>ربح شهري</span><strong class="${s.monthlyProfit >= 0 ? "positive" : "negative"}">${money(s.monthlyProfit)}</strong></div>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function renderCharts() {
+      const stats = allStats();
+      const selected = productStats(productById(state.selectedProduct));
+      drawPie("costPie", selected.calc.breakdown.map(x => ({ label: x.label, value: x.cost })));
+      drawBar("profitBar", stats.map(x => ({ label: x.product.name, value: x.profit })), "profit");
+      drawBar("comboBar", stats.filter(x => x.product.category === "combo" || x.product.category === "burger").map(x => ({ label: x.product.name, value: x.profit })), "profit");
+      drawLine("ordersLine", [1, 5, 10, 15, 20, 30, 50].map(n => ({ label: n.toString(), value: selected.profit * n })));
+      drawBar("drinksChart", stats.filter(x => x.product.category === "drink").map(x => ({ label: x.product.name, value: x.profit })), "profit");
+      drawBar("burgerChart", stats.filter(x => x.product.category === "burger").map(x => ({ label: x.product.name, value: x.profit })), "profit");
+      drawBar("chickenChart", stats.filter(x => x.product.category === "chicken").map(x => ({ label: x.product.name, value: x.profit })), "profit");
+      const topCost = [...stats].sort((a, b) => b.calc.cost - a.calc.cost).slice(0, 5).map(x => ({ label: `تكلفة: ${x.product.name}`, value: x.calc.cost }));
+      const topProfit = [...stats].sort((a, b) => b.profit - a.profit).slice(0, 5).map(x => ({ label: `ربح: ${x.product.name}`, value: x.profit }));
+      drawBar("topChart", [...topCost, ...topProfit], "mixed");
+    }
+
+    const palette = ["#22c55e", "#38bdf8", "#f59e0b", "#fb7185", "#a78bfa", "#14b8a6", "#f97316", "#e879f9", "#84cc16", "#60a5fa"];
+
+    function prepareCanvas(id) {
+      const canvas = document.getElementById(id);
+      const rect = canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = Math.max(1, Math.floor(rect.width * dpr));
+      canvas.height = Math.max(1, Math.floor(rect.height * dpr));
+      const ctx = canvas.getContext("2d");
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, rect.width, rect.height);
+      ctx.font = "12px Tahoma, Arial";
+      ctx.textAlign = "right";
+      ctx.textBaseline = "middle";
+      return { canvas, ctx, w: rect.width, h: rect.height };
+    }
+
+    function drawPie(id, data) {
+      const { ctx, w, h } = prepareCanvas(id);
+      const filtered = data.filter(x => x.value > 0);
+      const total = filtered.reduce((s, x) => s + x.value, 0) || 1;
+      const radius = Math.min(w, h) * .28;
+      const cx = w * .68;
+      const cy = h * .46;
+      let start = -Math.PI / 2;
+      filtered.forEach((item, i) => {
+        const angle = (item.value / total) * Math.PI * 2;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.arc(cx, cy, radius, start, start + angle);
+        ctx.closePath();
+        ctx.fillStyle = palette[i % palette.length];
+        ctx.fill();
+        start += angle;
+      });
+      ctx.fillStyle = "#e2e8f0";
+      ctx.font = "700 13px Tahoma";
+      ctx.textAlign = "center";
+      ctx.fillText(money(total), cx, cy);
+      ctx.font = "11px Tahoma";
+      ctx.fillText("إجمالي التكلفة", cx, cy + 18);
+      drawLegend(ctx, filtered.slice(0, 8), w, h);
+    }
+
+    function drawLegend(ctx, data, w, h) {
+      ctx.textAlign = "right";
+      ctx.font = "11px Tahoma";
+      data.forEach((item, i) => {
+        const y = 20 + i * 24;
+        ctx.fillStyle = palette[i % palette.length];
+        ctx.fillRect(w - 18, y - 6, 10, 10);
+        ctx.fillStyle = "#cbd5e1";
+        const text = `${shortLabel(item.label, 18)} - ${money(item.value)}`;
+        ctx.fillText(text, w - 24, y);
+      });
+    }
+
+    function drawBar(id, data, mode) {
+      const { ctx, w, h } = prepareCanvas(id);
+      const list = data.filter(x => Number.isFinite(x.value)).slice(0, 14);
+      const pad = 34;
+      const chartW = w - pad * 2;
+      const chartH = h - 58;
+      const max = Math.max(...list.map(x => Math.abs(x.value)), 1);
+      const barH = Math.max(8, Math.min(20, chartH / Math.max(list.length, 1) - 6));
+      ctx.strokeStyle = "rgba(148,163,184,.18)";
+      ctx.beginPath();
+      ctx.moveTo(pad, 18);
+      ctx.lineTo(pad, chartH + 18);
+      ctx.lineTo(w - pad, chartH + 18);
+      ctx.stroke();
+      list.forEach((item, i) => {
+        const y = 24 + i * (barH + 8);
+        const valueW = Math.abs(item.value) / max * chartW;
+        ctx.fillStyle = item.value >= 0 ? (mode === "mixed" && item.label.startsWith("تكلفة") ? "#38bdf8" : "#22c55e") : "#fb7185";
+        ctx.fillRect(w - pad - valueW, y, valueW, barH);
+        ctx.fillStyle = "#cbd5e1";
+        ctx.textAlign = "right";
+        ctx.font = "11px Tahoma";
+        ctx.fillText(shortLabel(item.label, 20), w - pad, y + barH + 13);
+        ctx.textAlign = "left";
+        ctx.fillText(money(item.value), pad, y + barH / 2);
+      });
+    }
+
+    function drawLine(id, data) {
+      const { ctx, w, h } = prepareCanvas(id);
+      const pad = 34;
+      const chartW = w - pad * 2;
+      const chartH = h - 58;
+      const max = Math.max(...data.map(x => x.value), 1);
+      const min = Math.min(...data.map(x => x.value), 0);
+      const range = Math.max(max - min, 1);
+      ctx.strokeStyle = "rgba(148,163,184,.18)";
+      for (let i = 0; i <= 4; i++) {
+        const y = 18 + (chartH / 4) * i;
+        ctx.beginPath();
+        ctx.moveTo(pad, y);
+        ctx.lineTo(w - pad, y);
+        ctx.stroke();
+      }
+      const points = data.map((item, i) => ({
+        x: pad + (chartW / Math.max(data.length - 1, 1)) * i,
+        y: 18 + chartH - ((item.value - min) / range) * chartH,
+        item
+      }));
+      ctx.strokeStyle = "#38bdf8";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      points.forEach((p, i) => i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y));
+      ctx.stroke();
+      points.forEach(p => {
+        ctx.fillStyle = p.item.value >= 0 ? "#22c55e" : "#fb7185";
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#cbd5e1";
+        ctx.textAlign = "center";
+        ctx.font = "11px Tahoma";
+        ctx.fillText(p.item.label, p.x, h - 18);
+      });
+      ctx.fillStyle = "#cbd5e1";
+      ctx.textAlign = "right";
+      ctx.fillText("عدد الطلبات", w - pad, h - 8);
+    }
+
+    function shortLabel(label, max) {
+      return label.length > max ? `${label.slice(0, max - 1)}…` : label;
+    }
+
+    function updateAll(skipSave = false) {
+      renderSelects();
+      renderDashboard();
+      renderSelected();
+      renderTable();
+      renderFeasibility();
+      renderCharts();
+      if (!skipSave) save();
+    }
+
+    document.addEventListener("input", event => {
+      const target = event.target;
+      if (target.dataset.kind === "ingredient") {
+        state.ingredients[target.dataset.key] = Number(target.value || 0);
+        updateAll();
+      }
+      if (target.dataset.kind === "sauce") {
+        state.sauces[target.dataset.key] = Number(target.value || 0);
+        updateAll();
+      }
+      if (target.id === "sellingPrice") {
+        state.prices[state.selectedProduct] = Number(target.value || 0);
+        updateAll();
+      }
+      if (target.id === "dailyOrders") {
+        state.dailyOrders[state.selectedProduct] = Number(target.value || 0);
+        updateAll();
+      }
+      if (target.id === "searchInput") {
+        state.search = target.value;
+        updateAll();
+      }
+    });
+
+    document.addEventListener("change", event => {
+      const target = event.target;
+      if (target.id === "productSelect") {
+        state.selectedProduct = target.value;
+        updateAll();
+      }
+      if (target.id === "categoryFilter") {
+        state.categoryFilter = target.value;
+        updateAll();
+      }
+      if (target.id === "tableCategory") {
+        state.tableCategory = target.value;
+        updateAll();
+      }
+    });
+
+    document.addEventListener("click", event => {
+      const selectId = event.target.dataset.select;
+      if (selectId) {
+        state.selectedProduct = selectId;
+        state.categoryFilter = productById(selectId).category;
+        updateAll();
+        document.getElementById("dashboard").scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    });
+
+    document.getElementById("saveBtn").addEventListener("click", () => save(true));
+    document.getElementById("resetBtn").addEventListener("click", () => {
+      if (!confirm("هل تريد الرجوع للقيم الافتراضية؟")) return;
+      localStorage.removeItem(storageKey);
+      state = structuredClone(defaultData);
+      renderInputs();
+      updateAll(true);
+      save(true);
+    });
+
+    window.addEventListener("resize", () => {
+      clearTimeout(window.__chartResize);
+      window.__chartResize = setTimeout(renderCharts, 120);
+    });
+
+    renderInputs();
+    updateAll(true);
+    save(true);
+  </script>
+</body>
+</html>
